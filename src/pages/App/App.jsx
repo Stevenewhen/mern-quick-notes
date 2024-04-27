@@ -18,7 +18,7 @@ export default function App() {
         <>
           <button onClick={handleLogout}>Log Out</button>
           <Routes>
-            <Route path="/" element={<NotesPage />} />
+            <Route path="/" element={<NotesPage user={user} setUser={setUser} />} />
           </Routes>
         </>
       ) : (

@@ -1,12 +1,14 @@
 // routes/api/notes.js
 const express = require('express');
 const router = express.Router();
-const noteController = require('../../controllers/api/notes');
+const noteCtrl = require('../../controllers/api/notes');
 
-router.get('/', noteController.index);
+router.get('/', noteCtrl.index);
 
-router.get('/:id', noteController.show);
+router.get('/:id', noteCtrl.show);
 
-router.post('/', noteController.create);
+router.post('/', noteCtrl.create);
+
+router.delete('/:id', noteCtrl.delete);
 
 module.exports = router;

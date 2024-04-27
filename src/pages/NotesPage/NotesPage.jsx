@@ -1,55 +1,63 @@
 import React, { useState, useEffect } from "react";
-import * as notesAPI from '../../utilities/notes-api';
+import { getAll, deleteNote } from '../../utilities/notes-api';
+import NoteList from '../../components/NoteList/NoteList';
+import AddNoteForm from '../../components/AddNoteForm/AddNoteForm';
 import './NotesPage.css';
 
-export default function NotesPage() {
+export default function NotesPage({ user }) {
   const [notes, setNotes] = useState([]);
-  const [newNoteText, setNewNoteText] = useState("");
+  const [isAscending, setIsAscending] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
+    async function getNotes() {
       try {
-        const fetchedNotes = await notesAPI.getAll();
+        const fetchedNotes = await getAll();
         setNotes(fetchedNotes);
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
+      } catch (err) {
+        console.error('Error fetching notes:', err);
       }
     }
   
-    fetchData();
+    getNotes();
   }, []);
-  
 
-  const handleAddNote = async () => {
+  const addNote = (newNote) => {
+    setNotes([...notes, newNote]);
+  };
+
+  const handleDelete = async (noteToDelete) => {
     try {
-      const addedNote = await notesAPI.createNote({ text: newNoteText });
-      setNotes([...notes, addedNote]);
-      setNewNoteText("");
-    } catch (error) {
-      console.error("Error adding note:", error.message);
+      await deleteNote(noteToDelete._id);
+      setNotes(notes.filter(note => note._id !== noteToDelete._id));
+    } catch (err) {
+      console.error(err);
     }
   };
   
 
+  const toggleOrder = () => {
+    setIsAscending(!isAscending);
+  };
+
+
+  useEffect(() => {
+    const sortedNotes = [...notes].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return isAscending ? dateA - dateB : dateB - dateA;
+    });
+    setNotes(sortedNotes);
+  }, [isAscending]);
+
   return (
     <div className="notes-container">
       <div className="note-form">
-        <textarea
-          value={newNoteText}
-          onChange={(evt) => setNewNoteText(evt.target.value)}
-          placeholder="Enter your note"
-        />
-        <button onClick={handleAddNote}>Add Note</button>
+        <AddNoteForm addNote={addNote} user={user} />
       </div>
-      <div className="notes-list">
-        {notes.map((note, index) => (
-          <div key={index} className="note-item">
-            <p>{note.text}</p>
-            <p>{note.name}</p>
-            <p>{new Date(note.createdAt).toLocaleString()}</p>
-          </div>
-        ))}
-      </div>
+        <div className="note-list">
+          <button onClick={toggleOrder}>Toggle Order</button>
+          <NoteList notes={notes} deleteNote={handleDelete} />
+        </div>
     </div>
   );
 }

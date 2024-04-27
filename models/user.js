@@ -16,7 +16,11 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  notes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Note'
+  }]
 }, {
   timestamps: true,
   toJSON: {
@@ -25,6 +29,7 @@ const userSchema = new Schema({
       return ret;
     }
   }
+  
 });
 
 userSchema.pre('save', async function(next) {

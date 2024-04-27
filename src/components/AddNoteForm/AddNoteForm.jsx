@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
+import * as notesAPI from '../../utilities/notes-api';
 
-export default function AddNoteForm({ onAddNote }) {
-  const [text, setText] = useState('');
+export default function AddNoteForm({ addNote, user }) {
+  const [formData, setFormData] = useState({
+    text: ""
+  });
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      // Call the onAddNote function passed from the parent component with the note text
-      await onAddNote(text);
-      // Clear the text input after adding the note
-      setText('');
-    } catch (error) {
-      console.error('Error adding note:', error.message);
+  const [error, setError] = useState('');
+
+  function handleChange(evt) {
+    setFormData({
+      ...formData,
+      text: evt.target.value,
+    });
+    if (error) setError('');
+  }
+
+  async function handleAddNote(evt) {
+    evt.preventDefault();
+    if (!formData.text.trim()) {
+      setError('Note cannot be empty');
+      return;
     }
-  };
+    try {
+      const completeFormData = { text: formData.text.trim(), user: user._id };
+      const addedNote = await notesAPI.createNote(completeFormData);
+      addNote(addedNote);
+      setFormData({ text: '' }); 
+    } catch (error) {
+      console.error("Error adding note:", error.message);
+      setError('Failed to add note');
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleAddNote}>
       <input
         type="text"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
+        name="text"
+        value={formData.text}
+        onChange={handleChange}
         placeholder="Enter note text"
       />
       <button type="submit">Add Note</button>

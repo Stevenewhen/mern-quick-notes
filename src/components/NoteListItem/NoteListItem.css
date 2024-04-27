@@ -1,0 +1,28 @@
+.note-list-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 0.9rem;
+    height: auto;
+}
+
+.note-list-item p {
+    margin: 4px 0;
+    color: #333;
+}
+
+.note-list-item .note-footer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.3rem;
+    color: #666;
+}
+
+.note-list-item .note-footer p {
+    margin: 0 8px 0 0;
+}

@@ -1,9 +1,15 @@
-export default function NoteListItem({ noteItem }) {
-    return (
-      <div>
-        <p>{noteItem.text}</p>
-        <p>Created by: {noteItem.user ? noteItem.user.name : 'Unknown'}</p>
-        <p>Created at: {new Date(noteItem.createdAt).toLocaleString()}</p>
+import React from 'react';
+import './NoteListItem.css';
+
+export default function NoteListItem({ note, handleDelete }) {
+  return (
+    <div className="note-list-item">
+      <p>{note.text}</p>
+      <div className="note-footer">
+        <p>Created by: {note.user ? note.user.name : 'Unknown'}</p>
+        <p>Created at: {new Date(note.createdAt).toLocaleString()}</p>
       </div>
-    );
-  }
+      <button onClick={() => handleDelete(note)}>Delete</button>
+    </div>
+  );
+}
