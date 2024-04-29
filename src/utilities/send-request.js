@@ -9,7 +9,6 @@ export default async function sendRequest(url, method = 'GET', payload = null) {
     options.body = JSON.stringify(payload);
   }
   const token = getToken();
-  console.log("Fetched token:", token); // Check if the token is retrieved correctly
   
   if (token) {
     // Need to add an Authorization header
