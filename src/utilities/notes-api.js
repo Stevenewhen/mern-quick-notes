@@ -13,8 +13,14 @@ export async function deleteNote(noteId) {
   try {
     return await sendRequest(`${BASE_URL}/${noteId}`, 'DELETE');
   } catch (err) {
-    console.error();
+    console.error('Error deleting note:', err);
+    throw err; // Re-throw to handle it further up the call stack if needed
   }
+}
+
+// Inside notes-api.js
+export async function updateNote(noteId, noteData) {
+  return sendRequest(`${BASE_URL}/${noteId}`, 'PUT', noteData);
 }
 
 

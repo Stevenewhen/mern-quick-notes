@@ -1,13 +1,16 @@
-// NoteList.js
-import React from 'react';
 import NoteListItem from '../NoteListItem/NoteListItem';
 
-export default function NoteList({ notes, deleteNote }) {
+export default function NoteList({ notes, deleteNote, setEditingNoteId }) {
   return (
-    <div className="note-list">
-      {notes.map((note, idx) => (
-        <NoteListItem note={note} key={note._id} handleDelete={() => deleteNote(note)} />
-      ))}
-    </div>
+      <div className="note-list">
+          {notes.map(note => (
+              <NoteListItem
+                  key={note._id}
+                  note={note}
+                  handleDelete={deleteNote}
+                  setEditing={setEditingNoteId}
+              />
+          ))}
+      </div>
   );
 }
