@@ -4,11 +4,11 @@ module.exports = {
   index,
   show,
   create,
-  update: updateNote,
+  edit: editNote,
   delete: remove,
 };
 
-async function updateNote(req, res) {
+async function editNote(req, res) {
   try {
     const note = await Note.findById(req.params.id);
     if (!note) {
@@ -17,14 +17,17 @@ async function updateNote(req, res) {
     if (note.user.toString() !== req.user._id.toString()) {
       return res.status(403).json({ error: 'Not authorized' });
     }
-    if (req.body.text) note.text = req.body.text;
-    const updatedNote = await note.save();
+    const updatedNote = await Note.findByIdAndUpdate(
+      req.params.id,
+      { text: req.body.text },
+      { new: true } 
+    );
     res.json(updatedNote);
   } catch (err) {
-    console.error('Error updating note:', err);
-    res.status(500).json({ error: 'Error updating note', details: err.message });
+    res.status(500).json({ error: 'Error updating note' });
   }
 }
+
 
 async function remove(req, res) {
   try {

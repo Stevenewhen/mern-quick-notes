@@ -12,7 +12,7 @@ router.get('/:id', noteCtrl.show);
 router.post('/', noteCtrl.create);
 
 // Update a specific note by ID
-router.put('/:id', noteCtrl.update);
+router.put('/:id', noteCtrl.edit);
 
 // Delete a specific note by ID
 router.delete('/:id', noteCtrl.delete);

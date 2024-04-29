@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as notesAPI from '../../utilities/notes-api';
 
 export default function EditNoteForm({ note, onSave, onCancel }) {
     const [formData, setFormData] = useState({ text: note.text });
@@ -6,21 +7,31 @@ export default function EditNoteForm({ note, onSave, onCancel }) {
     const handleChange = (evt) => {
         setFormData({ ...formData, text: evt.target.value });
     };
+    
 
-    const handleSubmit = (evt) => {
+    const handleEditNote = async (evt) => {
         evt.preventDefault();
-        onSave(note._id, formData);
+    
+        try {
+            const updatedNote = await notesAPI.editNote(note._id, formData);
+            onSave(updatedNote);
+        } catch (err) {
+            console.error("Error updating note:", err);
+            alert("Failed to update the note: " + err.message);
+        }
     };
+    
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleEditNote}>
             <input
                 type="text"
                 value={formData.text}
                 onChange={handleChange}
+                placeholder="Edit your note"
             />
-            <button type="submit">Save Changes</button>  // Use type="submit" here
-            <button type="button" onClick={onCancel}>Cancel</button> // Proper use of onClick for cancel
+            <button type="submit">Save Changes</button>
+            <button type="button" onClick={onCancel}>Cancel</button>
         </form>
     );
 }

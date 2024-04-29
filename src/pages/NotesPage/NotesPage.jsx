@@ -29,21 +29,6 @@ useEffect(() => {
   getNotes();
 }, []);
 
-// DELETE
-async function handleDelete(noteToDelete) {
-  const originalNotes = [...notes]; // Copy current notes
-  setNotes(notes.filter(note => note._id !== noteToDelete._id)); // Optimistically remove the note
-
-  try {
-    await notesAPI.deleteNote(noteToDelete._id);
-  } catch (err) {
-    console.error(err);
-    setNotes(originalNotes); // Revert on error
-    alert('Failed to delete the note'); // Inform user
-  }
-}
-
-
 // TOGGLE ORDER 
   const toggleOrder = () => {
     setIsAscending(!isAscending);
@@ -59,46 +44,62 @@ async function handleDelete(noteToDelete) {
     setNotes(sortedNotes);
   }, [isAscending]);
 
-  // Editing and Saving Changes
-  const handleEdit = (noteId) => {
-    setEditingNoteId(noteId);  // Set current editing note ID
-  };
+// DELETE
+async function handleDelete(noteToDelete) {
+  const originalNotes = [...notes];
+  setNotes(notes.filter(note => note._id !== noteToDelete._id));
+  try {
+    await notesAPI.deleteNote(noteToDelete._id);
+  } catch (err) {
+    console.error(err);
+    setNotes(originalNotes);
+    alert('Failed to delete the note');
+  }
+}
+
+ // Editing and Saving Changes
+ async function handleSaveChanges(noteId, formData) {
+  const originalNotes = [...notes];
+  try {
+    const id = typeof noteId === 'object' ? noteId._id.toString() : noteId;
+    const updatedNote = await notesAPI.editNote(id, formData);
+    const updatedNotes = notes.map(note => (note._id === noteId ? updatedNote : note));
+    setNotes(updatedNotes);
+    setEditingNoteId(null);
+    const fetchedNotes = await notesAPI.getAll();
+    setNotes(fetchedNotes);
+  } catch (err) {
+    console.error("Error updating note:", err);
+    setNotes(originalNotes);
+  }
+}
 
 
-  const handleSaveChanges = (noteId, formData) => {
-    notesAPI.updateNote(noteId, formData)
-      .then(updatedNote => {
-        setNotes(notes.map(note => note._id === noteId ? {...note, ...updatedNote} : note));
-        setEditingNoteId(null);
-      })
-      .catch(err => {
-        console.error('Error updating the note:', err);
-        alert('Failed to update the note: ' + err.message);
-      });
-};
 
 
-  return (
-    <div className="notes-container">
-        <div className="note-form">
-            <AddNoteForm addNote={addNote} user={user} />
-        </div>
-        <div className="note-list">
-            <button onClick={toggleOrder}>Toggle Order</button>
-            <NoteList
-            notes={notes}
-            deleteNote={handleDelete}
-            setEditingNoteId={handleEdit}
-            editingNoteId={editingNoteId}
-        />
-        </div>
-        {editingNoteId && (
-        <EditNoteForm
-            note={notes.find(note => note._id === editingNoteId)}
-            onSave={(formData) => handleSaveChanges(editingNoteId, formData)}
-            onCancel={() => setEditingNoteId(null)}
-        />
-    )}
+
+
+return (
+  <div className="notes-container">
+    <div className="note-form">
+      <AddNoteForm addNote={addNote} user={user} />
     </div>
+    <div className="note-list">
+      <button onClick={toggleOrder}>Toggle Order</button>
+      <NoteList
+        key={notes.length}
+        notes={notes}
+        deleteNote={handleDelete}
+        setEditingNoteId={setEditingNoteId}
+      />
+    </div>
+    {editingNoteId && (
+      <EditNoteForm
+        note={notes.find(note => note._id === editingNoteId)}
+        onSave={handleSaveChanges}
+        onCancel={() => setEditingNoteId(null)}
+      />
+    )}
+  </div>
 );
 }
