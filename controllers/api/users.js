@@ -41,9 +41,10 @@ function checkToken(req, res) {
 
 function createJWT(user) {
   return jwt.sign(
-    // data payload
-    { user },
+    // Data payload including necessary fields
+    { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin }, 
     process.env.SECRET,
     { expiresIn: '24h' }
   );
 }
+

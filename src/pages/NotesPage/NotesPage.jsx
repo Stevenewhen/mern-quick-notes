@@ -14,9 +14,10 @@ export default function NotesPage({ user }) {
   // Function to add a note
   const addNote = (newNote) => {
     setNotes([...notes, newNote]);
+
   };
 
-// GETTING ALL NOTES FROM DB
+// GETTING ALL NOTES FROM DB, FROM UTILITIES/API
 useEffect(() => {
   async function getNotes() {
     try {
@@ -73,11 +74,6 @@ async function handleDelete(noteToDelete) {
     setNotes(originalNotes);
   }
 }
-
-
-
-
-
 
 return (
   <div className="notes-container">
